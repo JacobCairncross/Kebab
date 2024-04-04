@@ -26,14 +26,15 @@ public class BlockChainManager
         }
         string publicKey = File.ReadAllText(options.GenesisPubKey);
         Console.WriteLine(publicKey);
+        Random rnd = new();
         Transaction genesisTransaction = new(){
             ID="0",
             Inputs=[],
             Outputs=[
                 new TransactionOutput(){
                     Value=int.MaxValue,
-                    PublicKey=publicKey.ToCharArray(),
-                    Nonce=new Guid()
+                    PublicKey=publicKey,
+                    Nonce=rnd.Next()
                 }
             ]
         };

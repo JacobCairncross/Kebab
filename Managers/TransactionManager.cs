@@ -40,7 +40,7 @@ public class TransactionManager
         Transaction transaction = _blockChainManager.GetTransaction(input.BlockId, input.txid);
         TransactionOutput txOut = transaction.Outputs[input.OutputIndex];
         // Get public key from txout
-        char[] publicKey = txOut.PublicKey;
+        string publicKey = txOut.PublicKey;
         // RSACryptoServiceProvider rsaCrypSerPro = new ();
         // RSAParameters rsaParams = new RSAParameters(publicKey);
         UTF8Encoding encoder = new();
