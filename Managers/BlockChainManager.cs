@@ -22,6 +22,7 @@ public class BlockChainManager
 
         if(options?.GenesisPubKey is null)
         {
+            // TODO: Dont throw exception, 
             throw new Exception("No public key path provided");
         }
         string publicKey = File.ReadAllText(options.GenesisPubKey);

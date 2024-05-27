@@ -44,17 +44,19 @@ public class TransactionManager
         // RSACryptoServiceProvider rsaCrypSerPro = new ();
         // RSAParameters rsaParams = new RSAParameters(publicKey);
         UTF8Encoding encoder = new();
+        Console.WriteLine(txOut.ToString());
         byte[] plainTransaction = encoder.GetBytes(txOut.ToString());
         // Should stick this as a const somewhere better, probs appsettings? 
         // It doesnt need to be secret as we're just using it to shorten the transaction
-        ReadOnlySpan<byte> hmacKey = "garlic sauce"u8;
+        // ReadOnlySpan<byte> hmacKey = "garlic sauce"u8;
+        byte[] hmacKey = Encoding.ASCII.GetBytes("garlic sauce");
+
         using(RSACryptoServiceProvider rsa = new())
         using(HMACSHA256 hmac = new(hmacKey.ToArray()))
         {
             rsa.ImportFromPem(publicKey);
             // We may not need this hmac, if the 
             byte[] hashMessage = hmac.ComputeHash(plainTransaction);
-            Console.WriteLine($"SHA256's name in this is {HashAlgorithmName.SHA256.Name}");
             return rsa.VerifyHash(hashMessage, HashAlgorithmName.SHA256.Name, input.Signature);
         }
 

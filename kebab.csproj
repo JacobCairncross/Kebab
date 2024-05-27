@@ -5,6 +5,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Kebab.2024.05.27</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Jacob C</Authors>
+    <Company>Jake Co</Company>
   </PropertyGroup>
 
 </Project>
