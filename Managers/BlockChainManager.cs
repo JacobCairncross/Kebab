@@ -29,7 +29,7 @@ public class BlockChainManager
         Console.WriteLine(publicKey);
         Random rnd = new();
         Transaction genesisTransaction = new(){
-            ID="0",
+            Id="0",
             Inputs=[],
             Outputs=[
                 new TransactionOutput(){
@@ -59,7 +59,7 @@ public class BlockChainManager
     public Transaction? GetTransaction(int BlockId, string txid)
     {
         Transaction[] transactions = chain[BlockId].Transactions;
-        return transactions.FirstOrDefault(t => t.ID == txid);
+        return transactions.FirstOrDefault(t => t.Id == txid);
     }
 
     public int AddBlock()

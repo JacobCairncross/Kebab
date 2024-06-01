@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Kebab.Models;
 
 public class TransactionOutput
 {
-    // Amount of Doners to be sent
+    [Key]
+    public int Id { get; set; }
     public int Value {get;set;}
     // Pub Key this Output is addressed to
     public string PublicKey{get;set;}

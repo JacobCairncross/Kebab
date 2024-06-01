@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Kebab.Models;
+[PrimaryKey(nameof(BlockId), nameof(txid), nameof(OutputIndex))]
 public class TransactionInput
 {
     // Block this transaction is from

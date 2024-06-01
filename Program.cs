@@ -2,6 +2,7 @@
 using Kebab.Managers;
 using Kebab.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -10,6 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<AppDbContext>(options =>{
+    string password = $";Password={builder.Configuration["DbPassword"]}";
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")+password);
+});
+
 builder.Services.AddSingleton<BlockChainManager>();
 builder.Services.AddSingleton<TransactionManager>();
 builder.Services.AddHttpClient();
