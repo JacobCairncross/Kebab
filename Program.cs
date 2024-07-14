@@ -15,9 +15,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>{
     string password = $";Password={builder.Configuration["DbPassword"]}";
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")+password);
 });
-
-builder.Services.AddSingleton<BlockChainManager>();
-builder.Services.AddSingleton<TransactionManager>();
+// TODO: Big one, make interfaces for these
+builder.Services.AddScoped<BlockChain>();
+builder.Services.AddScoped<BlockChainManager>();
+builder.Services.AddScoped<TransactionManager>();
 builder.Services.AddHttpClient();
 Options options = new(){
     GenesisPubKey= builder.Configuration.GetValue<string>("GenesisPubKey")

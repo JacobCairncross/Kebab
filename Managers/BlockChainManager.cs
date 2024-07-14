@@ -1,11 +1,12 @@
 using Kebab.Models;
+using Microsoft.EntityFrameworkCore;
 
 // Should this be the singleton, or should the model be the singleton?
 // TODO: Make a generic block making function
 namespace Kebab.Managers;
 public class BlockChainManager
 {
-    private const int MINIMUM_TRANSACTIONS_TO_BLOCK = 0;
+    private const int MINIMUM_TRANSACTIONS_TO_BLOCK = 1;
     // Change this to be alterable based on rate of transactions
     private const int DIFFICULTY_LEVEL = 1;
     private const int MINIMUM_HASH_BYTE_LENGTH = 32; 
@@ -13,34 +14,48 @@ public class BlockChainManager
     private List<Transaction> transactions = new ();
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public BlockChainManager(IHttpClientFactory httpClientFactory, Options? options)
+    public BlockChainManager(IHttpClientFactory httpClientFactory, Options? options, BlockChain blockChain)
     {
         _httpClientFactory = httpClientFactory;
-        // TODO: Optionaly accept an existing blockchain to initialise chain
-        chain = new BlockChain();
-        // If no blockchain provided add a genesis block
+        // chain = new BlockChain();
 
-        if(options?.GenesisPubKey is null)
+        // Check if DB has block data to init from
+        // Check db here to see if its workin how you expect
+        // Will the blocks be in order? If I cant guarantee it then first order by datetime
+        // could also be best to make ID an int instead of guid to make ordering easier
+        // foreach(var block in db.Blocks)
+        // {
+        //     chain.AddBlock(block);
+        // }
+        // TODO: Optionaly accept an existing blockchain to initialise chain
+
+        // If no blocks in db and none provided add a genesis block
+        chain = blockChain;
+        if(chain.Count() == 0)
         {
-            // TODO: Dont throw exception, 
-            throw new Exception("No public key path provided");
+            if(options?.GenesisPubKey is null)
+            {
+                // TODO: Dont throw exception, 
+                throw new Exception("No public key path provided");
+            }
+            string publicKey = File.ReadAllText(options.GenesisPubKey);
+            Random rnd = new();
+            Transaction genesisTransaction = new(){
+                Id=0,
+                Inputs=[],
+                Outputs=[
+                    new TransactionOutput(){
+                        Value=int.MaxValue,
+                        PublicKey=publicKey,
+                        Nonce=rnd.Next()
+                    }
+                ]
+            };
+            Block genesis = CreateBlock(0 ,DateTimeOffset.UtcNow, new byte[32], "doner",[genesisTransaction]);
+            chain.AddBlock(genesis);
         }
-        string publicKey = File.ReadAllText(options.GenesisPubKey);
-        Console.WriteLine(publicKey);
-        Random rnd = new();
-        Transaction genesisTransaction = new(){
-            Id="0",
-            Inputs=[],
-            Outputs=[
-                new TransactionOutput(){
-                    Value=int.MaxValue,
-                    PublicKey=publicKey,
-                    Nonce=rnd.Next()
-                }
-            ]
-        };
-        Block genesis = CreateBlock(new Guid(),DateTime.Now, new byte[32], "doner",[genesisTransaction]);
-        chain.AddBlock(genesis);
+
+        
     }   
 
     // TODO: Add a function to verify a new block / new chain for when its docked
@@ -50,22 +65,24 @@ public class BlockChainManager
         // TODO: Maybe keep a store of a minimum number of transactions before creating a block
         transactions.Add(transaction);
 
-        if(transactions.Count > MINIMUM_TRANSACTIONS_TO_BLOCK){
+        // May need to ensure theres a lock of sorts on this? but that would require 
+        // the transactions list to be shared amongst managers
+        if(transactions.Count >= MINIMUM_TRANSACTIONS_TO_BLOCK){
             AddBlock();
         }
         return true;
     }
 
-    public Transaction? GetTransaction(int BlockId, string txid)
+    public Transaction? GetTransaction(int BlockId, int txid)
     {
-        Transaction[] transactions = chain[BlockId].Transactions;
+        ICollection<Transaction> transactions = chain[BlockId].Transactions;
         return transactions.FirstOrDefault(t => t.Id == txid);
     }
 
     public int AddBlock()
     {
-        Guid id = new();
-        DateTime timestamp = DateTime.Now;
+        int id = chain.Count();
+        DateTimeOffset timestamp = DateTimeOffset.UtcNow;
         byte[] prevHash = chain.Last().BlockHash;
         //Hard code for now, will make a loop to find a good one later
         Block newBlock;
@@ -77,8 +94,6 @@ public class BlockChainManager
             Console.WriteLine(newBlock.BlockHash);
         }
         while(newBlock.BlockHash[0..DIFFICULTY_LEVEL].All(b => b == 0));
-        // TODO: So like, if someone just keeps putting 00000 they'll get it and not actually have to 
-        // do a hash, add in a minimum hash value too
         
         if(chain.AddBlock(newBlock)){
             transactions.Clear();
@@ -89,21 +104,23 @@ public class BlockChainManager
 
     public BlockChain GetChain()
     {
+        Console.WriteLine("Returning chain");
         return chain;
     }
     // Maybe move this into blockchain model???
-    private Block CreateBlock(Guid id, DateTime timestamp, byte[] prevHash, string nonce, Transaction[] transactions)
+    private Block CreateBlock(int id, DateTimeOffset timestamp, byte[] prevHash, string nonce, Transaction[] transactions)
     {
         byte[] hashCode = Block.GetHash(id, timestamp, prevHash, nonce, transactions);
-        Block newBlock = new()
-        {
-            BlockId = chain.Count(),
-            Timestamp = timestamp,
-            BlockHash = hashCode,
-            PreviousHash = prevHash,
-            Nonce = nonce,
-            Transactions = transactions
-        };
+        // Block newBlock = new()
+        // {
+        //     BlockId = chain.Count(),
+        //     Timestamp = timestamp,
+        //     BlockHash = hashCode,
+        //     PreviousHash = prevHash,
+        //     Nonce = nonce,
+        //     Transactions = transactions
+        // };
+        Block newBlock = new(id, timestamp, hashCode, prevHash, nonce, transactions);
         return newBlock;
     }
 
@@ -114,5 +131,15 @@ public class BlockChainManager
         client.GetAsync(url);
         //Json Shit
         return true;
+    }
+
+    public bool ValidateTransaction(Transaction transaction)
+    {
+        // Check all txIns have not been previously spent
+        // foreach(var input in transaction.Inputs)
+        // {
+            
+        // }
+        throw new NotImplementedException();
     }
 }

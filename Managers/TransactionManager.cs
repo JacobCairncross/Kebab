@@ -26,7 +26,7 @@ public class TransactionManager
     {
         bool inputsSigned = transaction.Inputs.All(i => VerifyInput(i));
 
-        int totalInputValue = transaction.Inputs.Select(i => _blockChainManager.GetTransaction(i.BlockId, i.txid)?.Outputs[i.OutputIndex])
+        int totalInputValue = transaction.Inputs.Select(i => _blockChainManager.GetTransaction(i.BlockId, i.TransactionId)?.Outputs[i.OutputIndex])
                             .Sum(o => o.Value);
         int totalOutputValue = transaction.Outputs.Sum(o => o.Value);
         return totalInputValue >= totalOutputValue && inputsSigned;
@@ -37,7 +37,7 @@ public class TransactionManager
     {
         // TODO: Null check the fuck out of this
         // Get txout from hash and index
-        Transaction transaction = _blockChainManager.GetTransaction(input.BlockId, input.txid);
+        Transaction transaction = _blockChainManager.GetTransaction(input.BlockId, input.TransactionId);
         TransactionOutput txOut = transaction.Outputs[input.OutputIndex];
         // Get public key from txout
         string publicKey = txOut.PublicKey;

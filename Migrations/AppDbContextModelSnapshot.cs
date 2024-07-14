@@ -21,13 +21,38 @@ namespace kebab.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Kebab.Models.Block", b =>
+                {
+                    b.Property<int>("BlockId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BlockId"));
+
+                    b.Property<byte[]>("BlockHash")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Nonce")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("PreviousHash")
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("BlockId");
+
+                    b.ToTable("Blocks");
+                });
+
             modelBuilder.Entity("Kebab.Models.Transaction", b =>
                 {
                     b.Property<int>("BlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.HasKey("BlockId", "Id");
 
@@ -39,8 +64,8 @@ namespace kebab.Migrations
                     b.Property<int>("BlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("txid")
-                        .HasColumnType("text");
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("OutputIndex")
                         .HasColumnType("integer");
@@ -52,10 +77,7 @@ namespace kebab.Migrations
                     b.Property<int?>("TransactionBlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("text");
-
-                    b.HasKey("BlockId", "txid", "OutputIndex");
+                    b.HasKey("BlockId", "TransactionId", "OutputIndex");
 
                     b.HasIndex("TransactionBlockId", "TransactionId");
 
@@ -64,11 +86,14 @@ namespace kebab.Migrations
 
             modelBuilder.Entity("Kebab.Models.TransactionOutput", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("BlockId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OutputIndex")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Nonce")
                         .HasColumnType("integer");
@@ -80,31 +105,48 @@ namespace kebab.Migrations
                     b.Property<int?>("TransactionBlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("text");
-
                     b.Property<int>("Value")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("BlockId", "TransactionId", "OutputIndex");
 
                     b.HasIndex("TransactionBlockId", "TransactionId");
 
                     b.ToTable("TransactionOutputs");
                 });
 
+            modelBuilder.Entity("Kebab.Models.Transaction", b =>
+                {
+                    b.HasOne("Kebab.Models.Block", "block")
+                        .WithMany("Transactions")
+                        .HasForeignKey("BlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("block");
+                });
+
             modelBuilder.Entity("Kebab.Models.TransactionInput", b =>
                 {
-                    b.HasOne("Kebab.Models.Transaction", null)
+                    b.HasOne("Kebab.Models.Transaction", "Transaction")
                         .WithMany("Inputs")
                         .HasForeignKey("TransactionBlockId", "TransactionId");
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Kebab.Models.TransactionOutput", b =>
                 {
-                    b.HasOne("Kebab.Models.Transaction", null)
+                    b.HasOne("Kebab.Models.Transaction", "Transaction")
                         .WithMany("Outputs")
                         .HasForeignKey("TransactionBlockId", "TransactionId");
+
+                    b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Kebab.Models.Block", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Kebab.Models.Transaction", b =>
