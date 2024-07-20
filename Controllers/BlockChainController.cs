@@ -13,7 +13,7 @@ public class BlockChainController : Controller{
     }
 
     [HttpPost]
-    public string Transaction([FromBody] Transaction transaction)
+    public string Transaction([FromBody] TransactionRequest transaction)
     {
         bool status = _transactionManager.AddTransaction(transaction);
         return $"Received transaction {transaction}. Transaction Status {status}";

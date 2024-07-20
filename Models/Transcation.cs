@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Kebab.Models;
 [PrimaryKey(nameof(BlockId), nameof(Id))]
 public class Transaction{
-    // public Transaction(){}
     public int Id {get;set;}
     public int BlockId { get; set; }
     public Block block{get; set; }

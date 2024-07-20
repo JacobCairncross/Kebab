@@ -11,7 +11,7 @@ public class BlockChainManager
     private const int DIFFICULTY_LEVEL = 1;
     private const int MINIMUM_HASH_BYTE_LENGTH = 32; 
     private readonly Models.BlockChain chain;
-    private List<Transaction> transactions = new ();
+    private List<TransactionRequest> transactions = new ();
     private readonly IHttpClientFactory _httpClientFactory;
 
     public BlockChainManager(IHttpClientFactory httpClientFactory, Options? options, BlockChain blockChain)
@@ -40,8 +40,7 @@ public class BlockChainManager
             }
             string publicKey = File.ReadAllText(options.GenesisPubKey);
             Random rnd = new();
-            Transaction genesisTransaction = new(){
-                Id=0,
+            TransactionRequest genesisTransaction = new(){
                 Inputs=[],
                 Outputs=[
                     new TransactionOutput(){
@@ -59,7 +58,7 @@ public class BlockChainManager
     }   
 
     // TODO: Add a function to verify a new block / new chain for when its docked
-    public bool AddTransaction(Transaction transaction)
+    public bool AddTransaction(TransactionRequest transaction)
     {
         
         // TODO: Maybe keep a store of a minimum number of transactions before creating a block
@@ -108,19 +107,9 @@ public class BlockChainManager
         return chain;
     }
     // Maybe move this into blockchain model???
-    private Block CreateBlock(int id, DateTimeOffset timestamp, byte[] prevHash, string nonce, Transaction[] transactions)
+    private Block CreateBlock(int id, DateTimeOffset timestamp, byte[] prevHash, string nonce, TransactionRequest[] transactionRequests)
     {
-        byte[] hashCode = Block.GetHash(id, timestamp, prevHash, nonce, transactions);
-        // Block newBlock = new()
-        // {
-        //     BlockId = chain.Count(),
-        //     Timestamp = timestamp,
-        //     BlockHash = hashCode,
-        //     PreviousHash = prevHash,
-        //     Nonce = nonce,
-        //     Transactions = transactions
-        // };
-        Block newBlock = new(id, timestamp, hashCode, prevHash, nonce, transactions);
+        Block newBlock = new(id, timestamp, prevHash, nonce, transactionRequests);
         return newBlock;
     }
 

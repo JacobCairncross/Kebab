@@ -12,7 +12,7 @@ public class TransactionManager
         _blockChainManager = blockChainManager;
     }
 
-    public bool AddTransaction(Transaction transaction)
+    public bool AddTransaction(TransactionRequest transaction)
     {
         if(VerifyTransaction(transaction))
         {
@@ -22,7 +22,7 @@ public class TransactionManager
     }
     // Could be better to return something else, an explanation
     // but for now we're not doing anything complicated enough to warrant it
-    public bool VerifyTransaction(Transaction transaction)
+    public bool VerifyTransaction(TransactionRequest transaction)
     {
         bool inputsSigned = transaction.Inputs.All(i => VerifyInput(i));
 
