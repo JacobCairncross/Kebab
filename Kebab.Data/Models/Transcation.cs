@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kebab.Models;
+namespace Kebab.Data.Models;
 
 [PrimaryKey(nameof(BlockId), nameof(Id))]
 public class Transaction{

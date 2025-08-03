@@ -1,5 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text.Json.Serialization;
+using Kebab.Data.Contexts;
+using Kebab.Data.Models;
 using Kebab.Managers;
 using Kebab.Models;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews()
@@ -17,10 +21,21 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-builder.Services.AddDbContext<AppDbContext>(options =>{
-    string password = $";Password={builder.Configuration["POSTGRES_PASSWORD"]}";
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")/*+password*/);
-});
+if (builder.Environment.IsDevelopment())
+{
+    builder.AddNpgsqlDbContext<AppDbContext>("postgresdb");
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        string password = $";Password={builder.Configuration["POSTGRES_PASSWORD"]}";
+        options.UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            x => x.MigrationsAssembly("kebab"));
+    });
+}
+
 // TODO: Big one, make interfaces for these
 builder.Services.AddScoped<BlockChain>();
 builder.Services.AddScoped<BlockChainManager>();

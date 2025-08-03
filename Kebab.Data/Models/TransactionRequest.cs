@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Kebab.Models;
+namespace Kebab.Data.Models;
 
 public class TransactionRequest{
     public List<TransactionInput> Inputs {get;set;} = new List<TransactionInput>();

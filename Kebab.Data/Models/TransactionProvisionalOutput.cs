@@ -1,7 +1,7 @@
-using Kebab.Models;
+using Kebab.Data.Models;
 
 // TODO: Get rid of this class if possible
-namespace Kebab.Models;
+namespace Kebab.Data.Models;
 public class TransactionProvisionalOutput()
 {
     public int Value {get;set;}

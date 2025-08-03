@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Kebab/">
+    <Project Path="Kebab/kebab.csproj" />
+  </Folder>
+  <Folder Name="/KebabClient/">
+    <Project Path="KebabClient/kebabClient.csproj" />
+  </Folder>
+  <Project Path="Kebab.AppHost/Kebab.AppHost.csproj" />
+  <Project Path="Kebab.Data/Kebab.Data.csproj" />
+  <Project Path="Kebab.MigrationService/Kebab.MigrationService.csproj" />
+  <Project Path="Kebab.ServiceDefaults/Kebab.ServiceDefaults.csproj" />
+</Solution>

@@ -33,7 +33,14 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
     public async Task<string> GetKey([FromQuery] string key)
     {
         // if manager returns specific exceptions you can catch here to return better errors
-        return new string(await walletManager.ReadKey(key == "private" ? Key.Private : Key.Public));
+        try
+        {
+            return new string(await walletManager.ReadKey(key == "private" ? Key.Private : Key.Public));
+        }
+        catch(Exception e) when (e is FileNotFoundException)
+        {
+            return "No key set";
+        }
     }
 
     [HttpGet]

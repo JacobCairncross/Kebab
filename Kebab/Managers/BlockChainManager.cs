@@ -1,3 +1,4 @@
+using Kebab.Data.Models;
 using Kebab.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +39,7 @@ public class BlockChainManager
                 // TODO: Dont throw exception, 
                 throw new Exception("No public key path provided");
             }
+            // string publicKey = File.ReadAllText(options.GenesisPubKey).Replace("\r", "");
             string publicKey = File.ReadAllText(options.GenesisPubKey);
             Random rnd = new();
             TransactionRequest genesisTransaction = new(){

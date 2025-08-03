@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Transactions;
-using Kebab.Models;
+using Kebab.Data.Models;
 using KebabClient.Models;
 
 namespace KebabClient.Managers;
@@ -15,7 +15,7 @@ public class MinerManager(KnownMiners knownMiners, IHttpClientFactory httpClient
         // This could be slow for large amounts of known miners, maybe restrict in future to only search a few
         // TODO: parallelise this 
         List<List<Block>> chains = [];
-        using(HttpClient client = httpClientFactory.CreateClient())
+        using(HttpClient client = _httpClientFactory.CreateClient())
         {
             foreach(var miner in _knownMiners.miners)
             {
@@ -41,8 +41,9 @@ public class MinerManager(KnownMiners knownMiners, IHttpClientFactory httpClient
         // JsonContent transactionContent = JsonContent.Create(JsonSerializer.Serialize(transaction));
         // Why is the client being made here?
         List<Task<Tuple<int,string>>> responseTasks = new();
-        using(HttpClient client = httpClientFactory.CreateClient())
-        foreach(var miner in _knownMiners.miners)
+        // TODO: Check I can get rid of this client, since its not used, alternatively extend TransmitToMiner so it can accept a client to avoid making a new one each time
+        using (HttpClient client = _httpClientFactory.CreateClient())
+        foreach (var miner in _knownMiners.miners)
         {
             // Arguably better to just let full url be put in for more flexability but
             // Im not too bothered about that
@@ -76,7 +77,7 @@ public class MinerManager(KnownMiners knownMiners, IHttpClientFactory httpClient
 
     private async Task<Tuple<int,string>> TransmitToMiner(string miner, TransactionRequest transaction)
     {
-        using(HttpClient client = httpClientFactory.CreateClient())
+        using(HttpClient client = _httpClientFactory.CreateClient())
         {
             try
             {

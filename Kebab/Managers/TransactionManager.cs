@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Kebab.Data.Models;
 using Kebab.Models;
 using Microsoft.VisualBasic;
 
@@ -61,7 +62,8 @@ public class TransactionManager
             rsa.ImportFromPem(publicKey);
             // We may not need this hmac, if the 
             byte[] hashMessage = hmac.ComputeHash(plainTransaction);
-            return rsa.VerifyHash(hashMessage, HashAlgorithmName.SHA256.Name, input.Signature);
+            bool verified = rsa.VerifyHash(hashMessage, HashAlgorithmName.SHA256.Name, input.Signature);
+            return verified;
         }
 
         // So find a way to make rsaParams object out of just public key (probably)

@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace kebab.Migrations
+namespace Kebab.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -21,7 +21,8 @@ namespace kebab.Migrations
                     Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     BlockHash = table.Column<byte[]>(type: "bytea", nullable: true),
                     PreviousHash = table.Column<byte[]>(type: "bytea", nullable: true),
-                    Nonce = table.Column<string>(type: "text", nullable: true)
+                    Nonce = table.Column<string>(type: "text", nullable: true),
+                    test = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

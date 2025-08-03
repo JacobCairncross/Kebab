@@ -39,7 +39,8 @@ public class WalletManager(Options options)
         }
         else
         {
-            throw new Exception("File does not exist, generate wallet before attempting to read");
+            // TODO: Maybe rework this, if I'm going to throw this anyway then maybe theres no need to check
+            throw new FileNotFoundException("File does not exist, generate wallet before attempting to read");
         }
     }
     

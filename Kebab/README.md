@@ -6,6 +6,9 @@
 - actually put at least one server up somewhere
 - In Client, get rid of TransactionController and merge with WalletController, keep the managers though
 - put the client into this repo then rework to use dotnet aspire. Having a monorepo makes sense even if you dont aspire up
+    - Aspiring well. Need to rework kebab to talk to db properly, instead of referencing it with a connection string
+        - can maybe bring back the connection string later? Would be good to wrap in a if(production) so we can reference a separate db in live environments
+        - If you cant get the migration to work maybe move the data stuff into a separate project and redo the migrations
 
 Running:
 - docker compose up

@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace Kebab.Models;
+namespace Kebab.Data.Models;
 public class Block{
     public Block() { }
     public Block(int blockId, DateTimeOffset timestamp, byte[] blockHash, byte[] previousHash, string nonce, Transaction[] transactions) 
@@ -46,7 +46,8 @@ public class Block{
     public byte[]? BlockHash {get;set;}
     public byte[]? PreviousHash {get;set;}
     public string? Nonce {get;set;}
-    public ICollection<Transaction> Transactions {get;set;} = new List<Transaction>();
+    public string? test {get;set;}
+    public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 
     public static byte[] GetHash(int blockId, DateTimeOffset timestamp, byte[] previousHash, string nonce, ICollection<Transaction> transactions)
     {

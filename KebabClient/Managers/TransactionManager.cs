@@ -1,4 +1,4 @@
-using Kebab.Models;
+using Kebab.Data.Models;
 using Kebab.Managers;
 using System.Security.Cryptography;
 using System.Text;
@@ -150,6 +150,7 @@ public class TransactionManager
     {
         byte[] signedOutput;
         UTF8Encoding encoder = new();
+        // TODO: txOutput might need a proper toString so it doesnt just print class name
         byte[] output = encoder.GetBytes(txOut.ToString());
         byte[] hmacKey = Encoding.ASCII.GetBytes("garlic sauce");
         using(RSACryptoServiceProvider rsa = new())
