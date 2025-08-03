@@ -1,4 +1,4 @@
-@model KebabClient.Models.TransactionDTO
+@model Kebab.Data.Models.TransactionProvisionalOutput
 
 @{
     ViewData["Title"] = "Wallet";
@@ -18,9 +18,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        @* <form asp-action="Send">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+        <form asp-action="SendSingle" method="post">
             <div class="form-group">
                 <label asp-for="PublicKey" class="control-label">PubKey</label>
                 <input asp-for="PublicKey" class="form-control" />
@@ -39,12 +37,9 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form> *@
+        </form>
     </div>
 </div>
 
 <h3>Create a new wallet</h3>
 <a asp-action="CreateWallet">Create Wallet</a>
-@* <button @onclick="CreateWallet">
-        Update heading
-    </button> *@

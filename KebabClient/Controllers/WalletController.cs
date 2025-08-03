@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Kebab.Data.Models;
 using Kebab.Managers;
 using KebabClient.Managers;
 using KebabClient.Models;
@@ -56,6 +57,18 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
         // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
         Console.WriteLine(transaction.ToString());
         return await transactionManager.SpendTransactions(transaction);
+    }
+
+    [HttpPost]
+    public async Task<bool> SendSingle([FromForm] TransactionProvisionalOutput output)
+    {
+        // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
+        TransactionDTO transactionDTO = new()
+        {
+            Outputs = [output]
+        };
+        Console.WriteLine(transactionDTO.ToString());
+        return await transactionManager.SpendTransactions(transactionDTO);
     }
     
     // [HttpPost]

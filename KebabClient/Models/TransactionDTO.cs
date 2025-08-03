@@ -1,4 +1,4 @@
-using Kebab.Models;
+using Kebab.Data.Models;
 
 namespace KebabClient.Models;
 public class TransactionDTO
