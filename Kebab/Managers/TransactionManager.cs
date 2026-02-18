@@ -9,37 +9,60 @@ namespace Kebab.Managers;
 public class TransactionManager
 {
     public readonly BlockChainManager _blockChainManager;
-    public TransactionManager(BlockChainManager blockChainManager){
+    public readonly List<TransactionRequest> _transactionRequests;
+    public TransactionManager(BlockChainManager blockChainManager, [FromKeyedServices("transactionRequest")] List<TransactionRequest> transactionRequests)
+    {
         _blockChainManager = blockChainManager;
+        _transactionRequests = transactionRequests;
     }
 
     public bool AddTransaction(TransactionRequest transaction)
     {
-        if(VerifyTransaction(transaction))
+        if (VerifyTransaction(transaction))
         {
-            return _blockChainManager.AddTransaction(transaction);
+            _transactionRequests.Add(transaction);
+            return true;
         }
         return false;
+    }
+
+    // Consider making transaction requests public and just giving it a specified getter in the declaration
+    public List<TransactionRequest> PendingTransactionRequests()
+    {
+        return _transactionRequests;
     }
     // Could be better to return something else, an explanation
     // but for now we're not doing anything complicated enough to warrant it
     public bool VerifyTransaction(TransactionRequest transaction)
     {
+        // Check all inputs are valid
         bool inputsSigned = transaction.Inputs.All(i => VerifyInput(i));
 
+        // Check outputs <= Sum(inputs)
         int totalInputValue = transaction.Inputs.Select(i => _blockChainManager.GetTransaction(i.BlockId, i.TransactionId)?.Outputs[i.OutputIndex])
                             .Sum(o => o.Value);
         int totalOutputValue = transaction.Outputs.Sum(o => o.Value);
-        return totalInputValue >= totalOutputValue && inputsSigned;
-        
+
+        // Also need to check incase any inputs are used in the currently pending transaction requests
+        // _transactionRequests.Where(tr => tr.)
+        bool inputAlreadyUsed = transaction.Inputs.Any(i =>
+            _transactionRequests.Any(r =>
+                r.Inputs.Any(j => i.BlockId == j.BlockId && i.TransactionId == j.TransactionId && i.OutputIndex == j.OutputIndex)
+        ));
+        return totalInputValue >= totalOutputValue && inputsSigned && !inputAlreadyUsed;
+
     }
 
+    // <summary>
+    // Checks to see if transaction input has the correct hash to confirm they own the wallet 
+    // the specified output was sent to  
+    // </summary>
     public bool VerifyInput(TransactionInput input)
     {
         // TODO: Null check the fuck out of this
         // Get txout from hash and index
         Transaction? transaction = _blockChainManager.GetTransaction(input.BlockId, input.TransactionId);
-        if(transaction == null)
+        if (transaction == null)
         {
             throw new Exception("A claimed transaction does not exist");
         }
@@ -56,8 +79,8 @@ public class TransactionManager
         // ReadOnlySpan<byte> hmacKey = "garlic sauce"u8;
         byte[] hmacKey = Encoding.ASCII.GetBytes("garlic sauce");
 
-        using(RSACryptoServiceProvider rsa = new())
-        using(HMACSHA256 hmac = new(hmacKey.ToArray()))
+        using (RSACryptoServiceProvider rsa = new())
+        using (HMACSHA256 hmac = new(hmacKey.ToArray()))
         {
             rsa.ImportFromPem(publicKey);
             // We may not need this hmac, if the 

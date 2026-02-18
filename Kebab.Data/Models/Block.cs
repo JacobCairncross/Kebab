@@ -24,6 +24,7 @@ public class Block{
             PreviousHash = previousHash;
             Nonce = nonce;
             // TODO: Theres got to be a better way to do this
+            // Check if theres a way to verify no inputs are used twice here. They've all previously been verified as signed so thats fine, might need to make sure they still add up too?
             ICollection<Transaction> transactions = transactionRequests.Select((tr,i) => new Transaction(){
                 Id=i,
                 BlockId=blockId,
@@ -46,7 +47,7 @@ public class Block{
     public byte[]? BlockHash {get;set;}
     public byte[]? PreviousHash {get;set;}
     public string? Nonce {get;set;}
-    public string? test {get;set;}
+    public string? test {get;set;} // TODO: Get rid of this
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 
     public static byte[] GetHash(int blockId, DateTimeOffset timestamp, byte[] previousHash, string nonce, ICollection<Transaction> transactions)

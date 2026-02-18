@@ -13,9 +13,14 @@ var miner = builder.AddProject<Projects.kebab>("miner")
        .WaitForCompletion(migrations);
        // .WaitFor(postgresdb);
 
-builder.AddProject<Projects.kebabClient>("client")
+var clientBackend = builder.AddProject<Projects.kebabClient>("client")
        .WithExternalHttpEndpoints()
        .WithReference(miner)
        .WaitFor(miner);
+
+builder.AddViteApp(name: "client-frontend", appDirectory: "../KebabClient/frontend")
+    .WithReference(clientBackend)
+    .WaitFor(clientBackend);
+//     .WithNpmPackageInstallation();
 
 builder.Build().Run();

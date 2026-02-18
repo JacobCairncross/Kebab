@@ -16,6 +16,13 @@
 
 <h3>Send: </h3>
 <hr />
+@if((bool?)@ViewData["SendSuccess"] ?? false)
+{
+    <p>Success</p>
+}
+else{
+    <p>Fail</p>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="SendSingle" method="post">
@@ -29,6 +36,7 @@
                 <input asp-for="Value" class="form-control" />
                 <span asp-validation-for="Value" class="text-danger"></span>
             </div>
+            <!-- Should be able to get rid of this and have it auto fill-->
             <div class="form-group">
                 <label asp-for="Nonce" class="control-label">Nonce</label>
                 <input asp-for="Nonce" class="form-control" />

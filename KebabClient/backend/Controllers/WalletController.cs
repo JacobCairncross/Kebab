@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Kebab.Data.Models;
 using Kebab.Managers;
+using Kebab.Models;
 using KebabClient.Managers;
 using KebabClient.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,15 +16,9 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        string pubKey = await GetKey("public");
-        ViewData["PublicKey"] = pubKey;
-        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(pubKey, QRCodeGenerator.ECCLevel.Q))
-        using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
-        {
-            byte[] qrCodeImage = qrCode.GetGraphic(20);
-            ViewData["PublicKeyPng"] = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
-        }
+        // TODO: Switch to using a strongly typed viewmodel over viewdata
+        // TODO: Change QR Code to go to a filled in 'send' screen on their own client
+        await SetPubKeyViewData();
         // ViewData["Balance"] = (await transactionManager
         //     .GetAllUnspentTransactions(pubKey.ToCharArray()))
         //     .Sum(t => t.Value);
@@ -38,12 +33,26 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
         {
             return new string(await walletManager.ReadKey(key == "private" ? Key.Private : Key.Public));
         }
-        catch(Exception e) when (e is FileNotFoundException)
+        catch (Exception e) when (e is FileNotFoundException)
         {
             return "No key set";
         }
     }
+    
+    private async Task SetPubKeyViewData()
+    {
+        string pubKey = await GetKey("public");
+        ViewData["PublicKey"] = pubKey;
+        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(pubKey, QRCodeGenerator.ECCLevel.Q))
+        using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+        {
+            byte[] qrCodeImage = qrCode.GetGraphic(20);
+            ViewData["PublicKeyPng"] = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
+        }
+    }
 
+    // TODO: Just return view, make sure the new keys are saved
     [HttpGet]
     public async Task<Tuple<string, string>> CreateWallet()
     {
@@ -60,7 +69,7 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
     }
 
     [HttpPost]
-    public async Task<bool> SendSingle([FromForm] TransactionProvisionalOutput output)
+    public async Task<IActionResult> SendSingle([FromForm] Kebab.Data.Models.TransactionProvisionalOutput output)
     {
         // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
         TransactionDTO transactionDTO = new()
@@ -68,7 +77,16 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
             Outputs = [output]
         };
         Console.WriteLine(transactionDTO.ToString());
-        return await transactionManager.SpendTransactions(transactionDTO);
+        bool success = await transactionManager.SpendTransactions(transactionDTO);
+        // TODO: Need 3 states, success, failure, havent tried. For now havent tried == failure
+        ViewData["SendSuccess"] = success;
+        return View("~/Views/Wallet/Index.cshtml");
+    }
+
+    [HttpGet]
+    public async Task<int> GetBalance()
+    {
+        return await walletManager.GetBalance();
     }
     
     // [HttpPost]

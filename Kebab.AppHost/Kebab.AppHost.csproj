@@ -4,19 +4,22 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>94f19c15-1d5f-4227-8747-865f188b3a0d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.0" />
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.3.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.1" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.1.1" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.1.1" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Bun" Version="13.1.2-beta.516" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.JavaScript.Extensions" Version="13.1.2-beta.516" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KebabClient\kebabClient.csproj" />
+    <ProjectReference Include="..\KebabClient\backend\kebabClient.csproj" />
     <ProjectReference Include="..\Kebab\kebab.csproj" />
     <ProjectReference Include="..\Kebab.MigrationService\Kebab.MigrationService.csproj" />
   </ItemGroup>

@@ -7,17 +7,18 @@ using Microsoft.EntityFrameworkCore;
 namespace Kebab.Managers;
 public class BlockChainManager
 {
-    private const int MINIMUM_TRANSACTIONS_TO_BLOCK = 1;
     // Change this to be alterable based on rate of transactions
     private const int DIFFICULTY_LEVEL = 1;
     private const int MINIMUM_HASH_BYTE_LENGTH = 32; 
-    private readonly Models.BlockChain chain;
-    private List<TransactionRequest> transactions = new ();
+    private readonly Models.BlockChain _chain;
+    // TODO: Rename this to _transactionRequests
+    private List<TransactionRequest> _transactions = new();
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public BlockChainManager(IHttpClientFactory httpClientFactory, Options? options, BlockChain blockChain)
+    public BlockChainManager(IHttpClientFactory httpClientFactory, Options? options, BlockChain blockChain, [FromKeyedServices("transactionRequest")] List<TransactionRequest> transactionRequests)
     {
         _httpClientFactory = httpClientFactory;
+        _transactions = transactionRequests;
         // chain = new BlockChain();
 
         // Check if DB has block data to init from
@@ -31,8 +32,8 @@ public class BlockChainManager
         // TODO: Optionaly accept an existing blockchain to initialise chain
 
         // If no blocks in db and none provided add a genesis block
-        chain = blockChain;
-        if(chain.Count() == 0)
+        _chain = blockChain;
+        if(_chain.Count() == 0)
         {
             if(options?.GenesisPubKey is null)
             {
@@ -53,26 +54,30 @@ public class BlockChainManager
                 ]
             };
             Block genesis = CreateBlock(1 ,DateTimeOffset.UtcNow, new byte[32], "doner",[genesisTransaction]);
-            chain.AddBlock(genesis);
+            _chain.AddBlock(genesis);
         }
 
         
-    }   
+    }
 
     // TODO: Add a function to verify a new block / new chain for when its docked
-    public bool AddTransaction(TransactionRequest transaction)
-    {
-        
-        // TODO: Maybe keep a store of a minimum number of transactions before creating a block
-        transactions.Add(transaction);
+    // TODO: Return false if something goes wrong
+    // public bool AddTransaction(TransactionRequest transaction)
+    // {
 
-        // May need to ensure theres a lock of sorts on this? but that would require 
-        // the transactions list to be shared amongst managers
-        if(transactions.Count >= MINIMUM_TRANSACTIONS_TO_BLOCK){
-            AddBlock();
-        }
-        return true;
-    }
+    //     // TODO: Maybe keep a store of a minimum number of transactions before creating a block
+    //     _transactions.Add(transaction);
+
+    //     // May need to ensure theres a lock of sorts on this? but that would require 
+    //     // the transactions list to be shared amongst managers
+    //     if (_transactions.Count >= MINIMUM_TRANSACTIONS_TO_BLOCK)
+    //     {
+    //         Console.WriteLine($"start that block at {DateTime.Now}");
+    //         var _ = AddBlock();
+    //     }
+    //     Console.WriteLine($"Exited add block at {DateTime.Now}");
+    //     return true;
+    // }
 
     public Transaction? GetTransaction(int BlockId, int txid)
     {
@@ -81,39 +86,50 @@ public class BlockChainManager
         // Transaction? transaction =  transactions.FirstOrDefault(t => t.Id == txid);
         // return transaction;
         // return chain.GetEnumerator().FirstOrDefault().Transactions.FirstOrDefault(t => t.Id == txid);
-        return chain[BlockId].Transactions.FirstOrDefault(t => t.Id == txid);
+        return _chain[BlockId].Transactions.FirstOrDefault(t => t.Id == txid);
     }
 
-    public int AddBlock()
+    // TODO: Check if this is needed or if we can just have the one function
+    public bool AddBlock()
     {
+        return AddBlock(_chain, _transactions);
+    }
+
+    public static bool AddBlock(BlockChain? chain, List<TransactionRequest> transactions)
+    {
+        if(chain is null || !transactions.Any()) return false;
+
         int id = chain.Count() + 1;
         DateTimeOffset timestamp = DateTimeOffset.UtcNow;
         byte[] prevHash = chain.Last().BlockHash;
         //Hard code for now, will make a loop to find a good one later
         Block newBlock;
-        int nonce = 0;        
+        int nonce = 0;
+        // TODO: Add a cancellation token here, that way when we receive news someone else has solved the block we arent stuck still solving this one 
         do
         {
             newBlock = CreateBlock(id, timestamp, prevHash, nonce.ToString(), transactions.ToArray());
             nonce++;
-            Console.WriteLine(newBlock.BlockHash);
+            Console.WriteLine($"nonce: {nonce}");
+            newBlock.BlockHash[0..DIFFICULTY_LEVEL].Select(b => { Console.Write(b); return true; });
         }
-        while(newBlock.BlockHash[0..DIFFICULTY_LEVEL].All(b => b == 0));
-        
-        if(chain.AddBlock(newBlock)){
+        while (!newBlock.BlockHash[0..DIFFICULTY_LEVEL].All(b => b == 0));
+        Console.WriteLine($"Added that block at {DateTime.Now}");
+        if (chain.AddBlock(newBlock))
+        {
             transactions.Clear();
-            return chain.Count();
+            return true;
         }
-        return -1;
+        return false;
     }
 
     public BlockChain GetChain()
     {
         Console.WriteLine("Returning chain");
-        return chain;
+        return _chain;
     }
     // Maybe move this into blockchain model???
-    private Block CreateBlock(int id, DateTimeOffset timestamp, byte[] prevHash, string nonce, TransactionRequest[] transactionRequests)
+    private static Block CreateBlock(int id, DateTimeOffset timestamp, byte[] prevHash, string nonce, TransactionRequest[] transactionRequests)
     {
         Block newBlock = new(id, timestamp, prevHash, nonce, transactionRequests);
         return newBlock;

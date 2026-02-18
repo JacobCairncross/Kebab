@@ -3,7 +3,7 @@
     <Project Path="Kebab/kebab.csproj" />
   </Folder>
   <Folder Name="/KebabClient/">
-    <Project Path="KebabClient/kebabClient.csproj" />
+    <Project Path="KebabClient/backend/kebabClient.csproj" />
   </Folder>
   <Project Path="Kebab.AppHost/Kebab.AppHost.csproj" />
   <Project Path="Kebab.Data/Kebab.Data.csproj" />

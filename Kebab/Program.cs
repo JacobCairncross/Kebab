@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Kebab.Data.Contexts;
 using Kebab.Data.Models;
+using Kebab.HostedServices;
 using Kebab.Managers;
 using Kebab.Models;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,8 @@ else
 builder.Services.AddScoped<BlockChain>();
 builder.Services.AddScoped<BlockChainManager>();
 builder.Services.AddScoped<TransactionManager>();
+builder.Services.AddKeyedSingleton<List<TransactionRequest>>("transactionRequest");
+builder.Services.AddHostedService<MiningHostedService>();
 builder.Services.AddHttpClient();
 Options options = new(){
     GenesisPubKey= builder.Configuration.GetValue<string>("GenesisPubKey")

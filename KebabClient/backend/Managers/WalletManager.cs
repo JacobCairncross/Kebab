@@ -1,11 +1,12 @@
 using System.Security.Cryptography;
+using Kebab.Data.Models;
 using KebabClient.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace KebabClient.Managers;
 
-public class WalletManager(Options options)
+public class WalletManager(Options options, MinerManager minerManager)
 {
     private Options _options => options;
     public enum Key
@@ -26,6 +27,7 @@ public class WalletManager(Options options)
         return new Tuple<string, string>(rsa.ExportRSAPublicKeyPem(), rsa.ExportRSAPrivateKeyPem());
     }
 
+    // TODO: Change this to return a string. Most places using it convert it anyway and is only used as char array in SignOutput
     public async Task<char[]> ReadKey(Key key)
     {
         string? keyPath = key == Key.Public ? _options.publicKeyPath : _options.privateKeyPath;
@@ -42,6 +44,41 @@ public class WalletManager(Options options)
             // TODO: Maybe rework this, if I'm going to throw this anyway then maybe theres no need to check
             throw new FileNotFoundException("File does not exist, generate wallet before attempting to read");
         }
+    }
+
+    public async Task<int> GetBalance()
+    {
+        // TODO: Can chain these so they await together to improve performance
+        char[] pubKey = await ReadKey(Key.Public);
+        string pubKeyString = new string(pubKey);
+
+        List<Block> chain = await minerManager.GetChain();
+
+        int balance = 0;
+        foreach(var block in chain)
+        {
+            foreach (var transaction in block.Transactions)
+            {
+                foreach(var output in transaction.Outputs)
+                {
+                    if(output.PublicKey == pubKeyString)
+                    {
+                        balance += output.Value;
+                    }
+                }
+
+                foreach(var input in transaction.Inputs)
+                {
+                    var output = chain[input.BlockId][input.TransactionId].Outputs[input.OutputIndex];
+                    if(output.PublicKey == pubKeyString)
+                    {
+                        balance -= output.Value;
+                    }
+                }
+            }
+        };
+
+        return balance;
     }
     
 }

@@ -3,7 +3,8 @@ using Kebab.Managers;
 using Kebab.Models;
 using Microsoft.AspNetCore.Mvc;
 
-public class BlockChainController : Controller{
+public class BlockChainController : Controller
+{
     private readonly BlockChainManager _blockChainManager;
     private readonly TransactionManager _transactionManager;
 
@@ -21,7 +22,13 @@ public class BlockChainController : Controller{
     }
 
     [HttpGet]
-    public string Chain(){
+    public string Chain()
+    {
         return _blockChainManager.GetChain().ToString();
+    }
+    
+    [HttpGet]
+    public string PendingTransactions(){
+        return string.Join(",", _transactionManager.PendingTransactionRequests() ?? []);
     }
 }
