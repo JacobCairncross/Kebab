@@ -1,37 +1,40 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Wallet from './views/Wallet'
+import Dashboard from './views/Dashboard'
+import Transaction from './views/Transaction'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+// TODO: use react router, probably in framework mode, once this is working well https://reactrouter.com/start/framework/routing
+  const [page, setPage] = useState('dashboard')
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="header">
+        <h1>Kebab</h1>
+
+        <div id="nav-bar">
+          <div className="nav-button" onClick={() => setPage("dashboard")}>Dashboard</div>
+          <div className="nav-button" onClick={() => setPage("wallet")}>Wallet</div>
+          <div className="nav-button" onClick={() => setPage("transaction")}>Transaction</div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        <h3>Manage your Meat</h3>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <Wallet/>
+      {renderPage(page)}
     </>
   )
 }
+
+const renderPage = (page: string) => {
+  switch (page){
+    case "dashboard":
+      return <Dashboard />
+    case "wallet":
+      return <Wallet />
+    case "transaction":
+      return <Transaction />
+  }
+}  
 
 export default App

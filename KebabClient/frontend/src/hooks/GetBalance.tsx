@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const GetBalance = async (): Promise<string> => {
+const GetBalance = (): string => {
     const [balance, setBalance] = useState('')
 
     useEffect(() => {

@@ -18,11 +18,14 @@ public class TransactionManager
 
     public bool AddTransaction(TransactionRequest transaction)
     {
+        Console.WriteLine($"Received transaction for {transaction.Outputs[0].PublicKey}");
         if (VerifyTransaction(transaction))
         {
             _transactionRequests.Add(transaction);
+            Console.WriteLine($"SUCCESS for {transaction.Outputs[0].PublicKey}");
             return true;
         }
+        Console.WriteLine($"FAILURE for {transaction.Outputs[0].PublicKey}");
         return false;
     }
 

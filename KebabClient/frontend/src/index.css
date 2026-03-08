@@ -1,3 +1,5 @@
+ /* Good god we need scss. Move over once you've had enough*/
+ 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -25,17 +27,18 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  flex-direction: column;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
+/* h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
+} */
 
-button {
+/* button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -52,7 +55,7 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -65,4 +68,59 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.kebab-icon {
+  width: 15px;
+}
+
+.show-key, .copy-button {
+  width: 50px;
+}
+
+.show-key:hover, .copy-button:hover {
+  cursor: pointer;
+}
+
+.pub-key-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.pub-key-box {
+  /* width: 100%; */
+  flex:1;
+  text-wrap-mode: nowrap;
+  overflow-x: scroll;
+  display: flex;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.header #nav-bar {
+  display: flex;
+  flex-direction: row;
+}
+
+.header #nav-bar .nav-button{
+  border: 2px solid black;
+  border-radius: 3px;
+  line-height: 50px;
+  height: 50px;
+  width: 100px;
+  margin: auto 5px;
+}
+
+.header #nav-bar .nav-button:hover{
+  cursor: pointer; 
+  border-color: #646cff;
+}
+
+.header #nav-bar .nav-button:focus, .header #nav-bar .nav-button:focus-visible{
+  outline: 4px auto -webkit-focus-ring-color;
 }

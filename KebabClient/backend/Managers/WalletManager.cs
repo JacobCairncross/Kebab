@@ -54,31 +54,45 @@ public class WalletManager(Options options, MinerManager minerManager)
 
         List<Block> chain = await minerManager.GetChain();
 
-        int balance = 0;
+        // TODO: Theres gotta be a better way of doing this via some db queries. May need doing on the miner but thats fine
+        // TODO: Need to account for "burnt" outputs. You're double counting
+        long balance = 0;
+        Console.WriteLine($"pubKeyString: {pubKeyString}");
         foreach(var block in chain)
         {
             foreach (var transaction in block.Transactions)
             {
+                Console.WriteLine($"bid: {transaction.BlockId}, tid: {transaction.Id}");
                 foreach(var output in transaction.Outputs)
                 {
+                    Console.WriteLine($"outputs: {output.BlockId}, {output.TransactionId}, {output.OutputIndex}");
                     if(output.PublicKey == pubKeyString)
                     {
+                        Console.WriteLine($"✅: {output.BlockId}, {output.TransactionId}, {output.OutputIndex}");
                         balance += output.Value;
                     }
                 }
 
                 foreach(var input in transaction.Inputs)
                 {
-                    var output = chain[input.BlockId][input.TransactionId].Outputs[input.OutputIndex];
+                    // TODO: maybe do this better. see if you can rewrite blockchain class to work without a db too
+                    var output = chain.First(b => b.BlockId == input.BlockId)[input.TransactionId].Outputs[input.OutputIndex];
+                    Console.WriteLine($"inputs: {input.BlockId}, {input.TransactionId}, {input.OutputIndex}");
                     if(output.PublicKey == pubKeyString)
                     {
+                        Console.WriteLine($"✅: {input.BlockId}, {input.TransactionId}, {input.OutputIndex}");
                         balance -= output.Value;
                     }
                 }
             }
         };
 
-        return balance;
+        if(balance > int.MaxValue || balance < int.MinValue)
+        {
+            // TODO: Make this a real log
+            Console.WriteLine("Balance is outside of int bound");
+        }
+        return (int)balance;
     }
     
 }

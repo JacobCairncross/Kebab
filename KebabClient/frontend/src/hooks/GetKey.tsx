@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const GetKey = async (): Promise<string> => {
+const GetKey = (): string => {
     const [key, setKey] = useState('')
 
     useEffect(() => {
