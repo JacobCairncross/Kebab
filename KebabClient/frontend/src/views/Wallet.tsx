@@ -18,14 +18,14 @@ const Wallet = () => {
             <div className="pub-key-container">
                 <p>Your Public Key:</p> 
                 <div className="pub-key-box">
-                    <img 
-                        className="copy-button" 
-                        src={Copy}
-                        onClick={() => {navigator.clipboard.writeText(pubKey)}}
-                        />
                     <p>{showKey ? pubKey : '*'.repeat(300)}</p>
                 </div>
                 <img className="show-key" onClick={() => setShowKey(!showKey)} src={showKey ? EyeOpen : EyeClosed} />
+                <img 
+                    className="copy-button" 
+                    src={Copy}
+                    onClick={() => {navigator.clipboard.writeText(pubKey)}}
+                    />
             </div>
             <h2>Your Balance: <img className="kebab-icon" src={KebabIcon} alt='icon' />{balance}</h2>
         </div>
