@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-
 export enum PopupType {
     Info = "info",
     Warning = "warning",
@@ -11,7 +9,6 @@ export interface PopUpProps {
   id: string
   text: string
   type: PopupType
-//   RemovePopUp: (popUpId: string) => void
 }
 
 const PopUp:React.FC<PopUpProps> = ({id, text, type}) =>{

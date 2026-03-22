@@ -23,20 +23,12 @@ function App() {
   const AddPopUp = (text:string, type:PopupType) => {
     const popUpid = (Math.random()*1000).toString()
     const newPopUp = {id: popUpid, text:text, type: type, RemovePopUp: RemovePopUp}
-    console.log(popUps)
-    console.log(newPopUp)
-
     setPopUps([...popUps, newPopUp])
     setTimeout(() => RemovePopUp(popUpid), 20000)
   }
 
   const RemovePopUp = (popUpId: string) => {
-    console.log('=================')
     const remainingPopups = popUpsRef.current.filter(p => p.id !== popUpId) 
-    console.log(Date.now())
-    console.log(popUpId);
-    console.log(popUpsRef.current)
-    console.log(remainingPopups)
     setPopUps([...remainingPopups])
   }
 

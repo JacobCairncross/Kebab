@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import GetBalance from "../hooks/GetBalance"
 import SendTransaction from "../utils/SendTransaction";
-import PopUp, { PopUpProps, PopupType } from "../components/PopUp";
+import { PopupType } from "../components/PopUp";
 import { PageProps } from "../App";
 
 enum Status {

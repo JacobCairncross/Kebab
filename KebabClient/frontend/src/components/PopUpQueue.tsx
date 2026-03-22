@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import PopUp, { PopUpProps } from "./PopUp"
 
 interface props {
