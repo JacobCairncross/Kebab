@@ -11,15 +11,10 @@ export interface PopUpProps {
   id: string
   text: string
   type: PopupType
-  RemovePopUp: (popUpId: string) => void
+//   RemovePopUp: (popUpId: string) => void
 }
 
-const PopUp:React.FC<PopUpProps> = ({id, text, type, RemovePopUp}) =>{
-    useEffect(() => {
-        console.log("I have been called in: ", id)
-        setTimeout(() => RemovePopUp(id), 20000)
-    }, [])
-    
+const PopUp:React.FC<PopUpProps> = ({id, text, type}) =>{
     return( 
         <div className={"popup "+type}>
             <p>{text}</p>

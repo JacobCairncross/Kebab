@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import Wallet from './views/Wallet'
 import Dashboard from './views/Dashboard'
@@ -14,20 +14,28 @@ function App() {
 // TODO: use react router, probably in framework mode, once this is working well https://reactrouter.com/start/framework/routing
   const [page, setPage] = useState('dashboard')
   const [popUps, setPopUps] = useState<PopUpProps[]>([])
+  const popUpsRef = useRef(popUps)
+
+  useEffect(() => {
+    popUpsRef.current = popUps;
+  }, [popUps]);
 
   const AddPopUp = (text:string, type:PopupType) => {
-    const newPopUp = {id: (Math.random()*1000).toString(), text:text, type: type, RemovePopUp: RemovePopUp}
-    console.log(...popUps)
+    const popUpid = (Math.random()*1000).toString()
+    const newPopUp = {id: popUpid, text:text, type: type, RemovePopUp: RemovePopUp}
+    console.log(popUps)
     console.log(newPopUp)
+
     setPopUps([...popUps, newPopUp])
+    setTimeout(() => RemovePopUp(popUpid), 20000)
   }
 
   const RemovePopUp = (popUpId: string) => {
     console.log('=================')
-    const remainingPopups = popUps.filter(p => p.id !== popUpId) 
+    const remainingPopups = popUpsRef.current.filter(p => p.id !== popUpId) 
     console.log(Date.now())
     console.log(popUpId);
-    console.log(popUps)
+    console.log(popUpsRef.current)
     console.log(remainingPopups)
     setPopUps([...remainingPopups])
   }
