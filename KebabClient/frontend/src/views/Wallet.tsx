@@ -5,9 +5,10 @@ import KebabIcon from '../assets/skewer-kebab-svgrepo-com.svg'
 import EyeOpen from '../assets/eye-svgrepo-com.svg'
 import EyeClosed from '../assets/eye-off-svgrepo-com.svg'
 import Copy from '../assets/copy-document-svgrepo-com.svg'
-import { useState } from "react";
+import { FC, useState } from "react";
+import { PageProps } from "../App";
 
-const Wallet = () => {
+const Wallet:FC<PageProps> = ({AddPopUp}) => {
     const [showKey, setShowKey] = useState(false)
     const pubKey = GetKey()
     const balance = formatNumber(parseInt(GetBalance()))
@@ -18,14 +19,16 @@ const Wallet = () => {
             <div className="pub-key-container">
                 <p>Your Public Key:</p> 
                 <div className="pub-key-box">
-                    <p>{showKey ? pubKey : '*'.repeat(300)}</p>
+                    <p>{showKey ? pubKey : 'Public Key'}</p>
                 </div>
-                <img className="show-key" onClick={() => setShowKey(!showKey)} src={showKey ? EyeOpen : EyeClosed} />
-                <img 
-                    className="copy-button" 
-                    src={Copy}
-                    onClick={() => {navigator.clipboard.writeText(pubKey)}}
-                    />
+                <div className="pub-key-controls">
+                    <img className="show-key" onClick={() => setShowKey(!showKey)} src={showKey ? EyeOpen : EyeClosed} />
+                    <img 
+                        className="copy-button" 
+                        src={Copy}
+                        onClick={() => {navigator.clipboard.writeText(pubKey)}}
+                        />
+                </div>
             </div>
             <h2>Your Balance: <img className="kebab-icon" src={KebabIcon} alt='icon' />{balance}</h2>
         </div>

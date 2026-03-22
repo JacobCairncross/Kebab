@@ -1,25 +1,35 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import GetBalance from "../hooks/GetBalance"
 import SendTransaction from "../utils/SendTransaction";
+import PopUp, { PopUpProps, PopupType } from "../components/PopUp";
+import { PageProps } from "../App";
 
-const Transaction = () => {
-    const [status, setStatus] = useState('presend') // presend, sent, error
+enum Status {
+    Presend = "Pre-Send",
+    Sent = "Sent",
+    Error = "Error"
+}
+
+const Transaction:FC<PageProps> = ({AddPopUp}) => {
+    const [status, setStatus] = useState(Status.Presend)
     const balance = GetBalance()
     return (
-        <div>
-            <h1>{status}</h1>
-            <h1>Create Transaction:</h1>
-            <h2>Your balance: {balance}</h2>
-            <form action={handleSubmit}>
-                <label>
-                    Recipients Address: <input name="recipient"/>
-                </label>
-                <label>
-                    Amount: <input name="amount" />
-                </label>
-               <button type="submit">Submit</button>
-            </form>
-        </div>
+        <>
+            <div>
+                {/* <h1>Status: {status}</h1> */}
+                <h1>Create Transaction:</h1>
+                <h2>Your balance: {balance}</h2>
+                <form className="transaction-form" action={handleSubmit}>
+                    <label className="transaction-form-input">
+                        Recipients Address: <input name="recipient"/>
+                    </label>
+                    <label className="transaction-form-input">
+                        Amount: <input name="amount" />
+                    </label>
+                <button type="submit">Submit</button>
+                </form>
+            </div>
+        </>
     )
     async function handleSubmit(formData: FormData) {
       const recipient = formData.get("recipient") as string
@@ -28,11 +38,11 @@ const Transaction = () => {
       const result = await SendTransaction(recipient, parseInt(amount))
       if(result == 'Successful')
       {
-        setStatus('sent')
+        AddPopUp("Sent successfuly", PopupType.Success)
       }
       else if(result == 'UnSuccessful')
       {
-        setStatus('error')
+        AddPopUp("Transaction Failed", PopupType.Error)
       }
     }
 }

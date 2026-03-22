@@ -1,6 +1,8 @@
+import { FC } from "react"
 import LastestBlockWidget from "../components/widgets/LatestBlockWidget"
+import { PageProps } from "../App"
 
-const Dashboard = () => {
+const Dashboard:FC<PageProps> = ({AddPopUp}) => {
     return (
         <div>
             <h1>Dashboard</h1>

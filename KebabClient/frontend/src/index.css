@@ -1,3 +1,5 @@
+ /* TODO: Need to organise this into separate files when you can be bothered*/
+ 
  :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -58,14 +60,35 @@ body {
 .pub-key-container {
   display: flex;
   flex-direction: row;
+  max-width: 80%;
+  margin: auto;
+
+  .pub-key-box {
+    flex:1;
+    text-wrap-mode: nowrap;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* .pub-key-controls{
+    flex: 1
+  } */
 }
 
-.pub-key-box {
-  flex:1;
-  text-wrap-mode: nowrap;
-  overflow-x: scroll;
+.transaction-form {
   display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: auto;
+
+  .transaction-form-input {
+    display: flex;
+    justify-content: space-between;
+  }
 }
+
 
 .header {
   display: flex;
@@ -95,4 +118,27 @@ body {
       }
     }
   }
+}
+
+.popup {
+  opacity: 1;
+  /* opacity: 0; */
+  &.info { 
+    background-color: #aaaaaa88;
+  }
+  &.warning { 
+    background-color: #dd551188;
+  }
+  &.error { 
+    background-color: #dd222288;
+  }
+  &.success { 
+    background-color: #11bb0088;
+    /* animation: fade 2s linear; */
+  }
+}
+
+@keyframes fade {
+  0%,100% { opacity: 0 }
+  50% { opacity: 1 }
 }
