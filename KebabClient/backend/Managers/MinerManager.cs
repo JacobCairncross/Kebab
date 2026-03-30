@@ -22,7 +22,10 @@ public class MinerManager(KnownMiners knownMiners, IHttpClientFactory httpClient
                 try 
                 {
                     HttpResponseMessage response = await client.GetAsync($"{miner}/BlockChain/Chain");
-                    chains.Add(JsonSerializer.Deserialize<List<Block>>(await response.Content.ReadAsStringAsync()) ?? new());
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseString);
+                    List<Block> chain = JsonSerializer.Deserialize<List<Block>>(responseString) ?? new();
+                    chains.Add(chain);
                 }
                 catch(Exception e)
                 {

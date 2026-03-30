@@ -1,5 +1,3 @@
-using Kebab.Data.Models;
-
 // TODO: Get rid of this class if possible
 namespace Kebab.Data.Models;
 public class TransactionProvisionalOutput()

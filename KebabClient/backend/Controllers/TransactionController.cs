@@ -1,3 +1,4 @@
+using Kebab.Data.Models;
 using Kebab.Managers;
 using KebabClient.Managers;
 using KebabClient.Models;
@@ -21,11 +22,23 @@ public class TransactionController(Managers.TransactionManager transactionManage
         return bodyText;
     }
 
+    // [HttpPost]
+    // public async Task<bool> Send([FromBody] TransactionDTO transaction)
+    // {
+    //     // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
+    //     return await transactionManager.SpendTransactions(transaction);
+    // }
+
+    // Copied from Wallet controller. Remove from wallet once we confirm this works
     [HttpPost]
-    public async Task<bool> Send([FromBody] TransactionDTO transaction)
+    public async Task<IActionResult> Send([FromForm] TransactionProvisionalOutput output)
     {
-        // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
-        return await transactionManager.SpendTransactions(transaction);
+        TransactionDTO transactionDTO = new()
+        {
+            Outputs = [output]
+        };
+        Result<TransactionRequest> result = await transactionManager.SpendTransactions(transactionDTO);
+        return result.IsSuccess ? Ok(result.Value) : Problem(result.Error.Description, statusCode: 500);
     }
 
     // [HttpGet]

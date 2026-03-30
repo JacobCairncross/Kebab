@@ -60,28 +60,28 @@ public class WalletController(WalletManager walletManager, Managers.TransactionM
         return keys;
     }
 
-    [HttpPost]
-    public async Task<bool> Send([FromBody] TransactionDTO transaction)
-    {
-        // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
-        Console.WriteLine(transaction.ToString());
-        return await transactionManager.SpendTransactions(transaction);
-    }
+    // [HttpPost]
+    // public async Task<bool> Send([FromBody] TransactionDTO transaction)
+    // {
+    //     // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
+    //     Console.WriteLine(transaction.ToString());
+    //     return await transactionManager.SpendTransactions(transaction);
+    // }
 
-    [HttpPost]
-    public async Task<IActionResult> SendSingle([FromForm] Kebab.Data.Models.TransactionProvisionalOutput output)
-    {
-        // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
-        TransactionDTO transactionDTO = new()
-        {
-            Outputs = [output]
-        };
-        Console.WriteLine(transactionDTO.ToString());
-        bool success = await transactionManager.SpendTransactions(transactionDTO);
-        // TODO: Need 3 states, success, failure, havent tried. For now havent tried == failure
-        ViewData["SendSuccess"] = success;
-        return View("~/Views/Wallet/Index.cshtml");
-    }
+    // [HttpPost]
+    // public async Task<IActionResult> SendSingle([FromForm] Kebab.Data.Models.TransactionProvisionalOutput output)
+    // {
+    //     // List<Tuple<string, int>> outputs = transaction.Outputs.Select(o => new Tuple<string,int>(o.PublicKey, o.Value)).ToList();
+    //     TransactionDTO transactionDTO = new()
+    //     {
+    //         Outputs = [output]
+    //     };
+    //     Console.WriteLine(transactionDTO.ToString());
+    //     bool success = await transactionManager.SpendTransactions(transactionDTO);
+    //     // TODO: Need 3 states, success, failure, havent tried. For now havent tried == failure
+    //     ViewData["SendSuccess"] = success;
+    //     return View("~/Views/Wallet/Index.cshtml");
+    // }
 
     [HttpGet]
     public async Task<int> GetBalance()

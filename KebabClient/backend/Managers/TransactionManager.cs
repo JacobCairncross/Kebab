@@ -19,7 +19,7 @@ public class TransactionManager
         _walletManager = walletManager;
     }
     // Should it be bool or return an 'error' object giving reason why it failed?
-    public async Task<bool> SpendTransactions(TransactionDTO transactionDTO)
+    public async Task<Result<TransactionRequest>> SpendTransactions(TransactionDTO transactionDTO)
     {
         // Get all transaction outputs assigned to this public key
         // (maybe an efficiency to only get enough to spend the desired amount / keep track of last place in chain with unused transactions)
@@ -36,7 +36,7 @@ public class TransactionManager
         int walletBalance = transactionsToSpend.Sum(x => x.Value);
         if(walletBalance < outputCost)
         {
-            return false;
+            return Errors.InsufficientFunds;
         }
 
         List<TransactionInput> transactionInputs = new();
@@ -57,7 +57,7 @@ public class TransactionManager
         Random rnd = new();
         TransactionProvisionalOutput remainder = new TransactionProvisionalOutput()
         {
-            PublicKey = new String(await _walletManager.ReadKey(Key.Public)),
+            PublicKey = new string(await _walletManager.ReadKey(Key.Public)),
             Value = walletBalance - outputCost,
             Nonce = rnd.Next()
         };
@@ -82,9 +82,10 @@ public class TransactionManager
         };
 
         // Broadcast it to all known miner nodes
-        return await _minerManager.TransmitToMiners(transaction);
+        bool transmitSuccess = await _minerManager.TransmitToMiners(transaction);
         // This is where client will need to be inited with some 'Well known' miners
         // add a manager for this communicating with Miner stuff
+        return transmitSuccess ? transaction : Errors.AllTransmissionsFailed;
     }
 
     // Could move this into the Blockchain class?
